@@ -28,38 +28,24 @@ locx = loc[:3]
 locale.getdefaultlocale()
 @persistent
 def is_render_complete(scene):
-#LINUX
-        if os.name=='posix' and locx=="es_":#Español
-            bashCommand = 'notify-send -u "critical" -i "blender" "Blender | Render Finalizado!"'
-        elif os.name=='posix' and locx=="ca_":#Catalán
-            bashCommand = 'notify-send -u "critical" -i "blender" "Blender | S´ha finalitzat la prestació!"'
-        elif os.name=='posix' and locx=="fr_":#Frances
-            bashCommand = 'notify-send -u "critical" -i "blender" "Blender | Rendu terminé!"'
-        elif os.name=='posix' and locx=="it_":#Italiano
-            bashCommand = 'notify-send -u "critical" -i "blender" "Blender | Rendering finito!"'
-        elif os.name=='posix' and locx=="pt_":#Protugues
-            bashCommand = 'notify-send -u "critical" -i "blender" "Blender | Renderizado concluído!"'
-        elif os.name=='posix' and locx=="de_":#Alemán
-            bashCommand = 'notify-send -u "critical" -i "blender" "Blender | Fertig machen!"'
-        else:
-            bashCommand = 'notify-send -u "critical" -i "blender" "Blender | Render Finished!"'
-        output = subprocess.check_output(['bash','-c', bashCommand])
-#WINDOWS
-        if os.name=='nt' and locx=="es_":#Español
-            command = 'msg * /server:%computername% "blender" "Blender | Render Finalizado!"'
-        elif os.name=='nt' and locx=="ca_":#Catalán
-            command = 'msg * /server:%computername% "blender" "Blender | S´ha finalitzat la prestació!"'
-        elif os.name=='nt' and locx=="fr_":#Frances
-            command = 'msg * /server:%computername% "blender" "Blender | Rendu terminé!"'
-        elif os.name=='nt' and locx=="it_":#Italiano
-            command = 'msg * /server:%computername% "blender" "Blender | Rendering finito!"'
-        elif os.name=='nt' and locx=="pt_":#Protugues
-            command = 'msg * /server:%computername% "blender" "Blender | Renderizado concluído!"'
-        elif os.name=='nt' and locx=="de_":#Alemán
-            command = 'msg * /server:%computername% "blender" "Blender | Fertig machen!"'
-        else:
-            command = 'msg * /server:%computername% "blender" "Blender | Render Finished!"'
-
+    localizedPrint = {
+        "es_": "Blender | Render Finalizado!", # Espanol
+        "ca_": "Blender | S´ha finalitzat la prestació!", # Catalan
+        "fr_": "Blender | Rendu terminé!", # Frances
+        "it_": "Blender | Rendering finito!", # Italiano
+        "pt_": "Blender | Renderizado concluído!", # Portugues
+        "de_": "Blender | Fertig machen!", # Deutsch
+    }
+    if not locx in localizedPrint:
+        localizedPrint = "Blender | Render Finished!"
+    else:
+        localizedPrint = localizedPrint[locx]
+    bashCommand = f'notify-send -a "Blender" -u "critical" -i "blender" "{localizedPrint}"'
+    command = f'msg * /server:%computername% "blender" "{localizedPrint}"'
+    if os.name=='posix':
+        subprocess.check_output(['bash','-c', bashCommand])
+    elif os.name=='nt':
+        subprocess.check_output(['cmd','/c', command])
 classes = ()
 register, unregister = bpy.utils.register_classes_factory(classes)
 

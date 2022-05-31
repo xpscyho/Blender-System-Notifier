@@ -24,11 +24,20 @@ bl_info = {
 import bpy, os, locale, subprocess, sys
 from bpy.app.handlers import persistent
 py_exec = sys.executable
-subprocess.call([str(py_exec), "-m", "ensurepip", "--user"])
+# check if pip is installed
 try:
-    from win10toast import ToastNotifier
-except ImportError:
-    subprocess.call([str(py_exec), "-m", "pip", "install", "--user", "plyer"])
+    if os.system == "Linux":
+        os.system("pip > /dev/null")
+    elif os.system == "Windows":
+        os.system("pip > NUL")
+except:
+    subprocess.call([str(py_exec), "-m", "ensurepip"])
+    subprocess.call([str(py_exec), "-m", "pip", "install", "--upgrade", "pip"])
+try:
+    from plyer import notification
+except:
+    subprocess.call([str(py_exec), "-m", "pip", "install", "plyer"])
+    from plyer import notification
 loc = locale.getlocale() # get current locale
 locx = loc[:3]
 locale.getdefaultlocale()
@@ -48,13 +57,13 @@ def is_render_complete(scene):
         localizedPrint = localizedPrint[locx]
     bashCommand = f'notify-send -a "Blender" -u "critical" -i "blender" "{localizedPrint}"'
     if sys.platform == "linux":
-        subprocess.check_output(['bash','-c', bashCommand])
+        subprocess.call(['notify-send', '-a', 'Blender', '-u', 'critical', '-i', 'blender', localizedPrint])
     elif sys.platform == "win32":
-        ToastNotifier().show_toast(
-            "Blender",
-            localizedPrint,
-            duration=10,
-            threaded=True
+        notification.notify(
+            title="Blender",
+            message=localizedPrint,
+            app_icon="blender",
+            timeout=10
         )
 classes = ()
 register, unregister = bpy.utils.register_classes_factory(classes)

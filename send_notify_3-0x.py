@@ -51,22 +51,23 @@ def is_render_complete(scene):
         "pt_": "Blender | Renderizado concluído!",  # Portugues
         "de_": "Blender | Fertig machen!",  # Deutsch
     }
-    if not locx in localizedPrint:
-        localizedPrint = "Blender | Render Finished!" + \
-            "\n" + str(datetime.now() - TIMER)
-    else:
-        localizedPrint = localizedPrint[locx] + \
-            "\n" + str(datetime.now() - TIMER)
-    if sys.platform == "linux":
-        subprocess.call(['notify-send', '-a', 'Blender', '-u',
-                        'normal', '-i', 'blender', localizedPrint])
-    elif sys.platform == "win32":
-        notification.notify(
-            title="Blender",
-            message=localizedPrint,
-            app_icon=None,
-            timeout=10
-        )
+    if datetime.now - TIMER > datetime(0, 0, 0, 0, 0, 30):
+        if not locx in localizedPrint:
+            localizedPrint = "Blender | Render Finished!" + \
+                "\n" + str(datetime.now() - TIMER)
+        else:
+            localizedPrint = localizedPrint[locx] + \
+                "\n" + str(datetime.now() - TIMER)
+        if sys.platform == "linux":
+            subprocess.call(['notify-send', '-a', 'Blender', '-u',
+                            'normal', '-i', 'blender', localizedPrint])
+        elif sys.platform == "win32":
+            notification.notify(
+                title="Blender",
+                message=localizedPrint,
+                app_icon=None,
+                timeout=10
+            )
 
 
 classes = ()

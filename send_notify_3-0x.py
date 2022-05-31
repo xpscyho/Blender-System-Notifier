@@ -23,11 +23,13 @@ bl_info = {
     }
 import bpy, os, locale, subprocess, sys
 from bpy.app.handlers import persistent
+py_exec = sys.executable
 try:
     from plyer import notification
 except:
-    raise ImportError("win10toast is not installed. Please install it using pip install plyer")
-py_exec = sys.executable
+    subprocess.call([py_exec, "-m", "pip", "install", "plyer", "-t", os.path.join(sys.prefix, "lib", "site-packages")])
+    from plyer import notification
+
 loc = locale.getlocale() # get current locale
 locx = loc[:3]
 locale.getdefaultlocale()
@@ -53,7 +55,7 @@ def is_render_complete(scene):
         notification.notify(
             title="Blender",
             message=localizedPrint,
-            app_icon="blender",
+            app_icon=None,
             timeout=10
         )
 classes = ()

@@ -12,17 +12,23 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 bl_info = {
     "name": "Notify",
-    "author": "Dziban",
-    "version": (1, 0),
-    "blender": (2, 80, 0),
+    "author": "xpscyho",
+    "version": (1, 1),
+    "blender": (3, 0, 0),
     "location": "Global",
     "description": "Displays a system notification when render is complete on Linux and Windows based systems",
     "warning": "",
     "wiki_url": "",
     "category": "System",
     }
-import bpy, os, locale, subprocess
+import bpy, os, locale, subprocess, sys
 from bpy.app.handlers import persistent
+py_exec = sys.executable
+subprocess.call([str(py_exec), "-m", "ensurepip", "--user"])
+try:
+    from plyer import notification
+except ImportError:
+    subprocess.call([str(py_exec), "-m", "pip", "install", "--user", "plyer"])
 loc = locale.getlocale() # get current locale
 locx = loc[:3]
 locale.getdefaultlocale()
@@ -45,7 +51,18 @@ def is_render_complete(scene):
     if os.name=='posix':
         subprocess.check_output(['bash','-c', bashCommand])
     elif os.name=='nt':
-        subprocess.check_output(['cmd','/c', command])
+        try:
+            from plyer import notification
+        except ImportError:
+            # install plyer
+            subprocess.check_output(['pip', 'install', 'plyer'])
+            from plyer import notification
+        notification.notify(
+            title="Blender",
+            message=localizedPrint,
+            app_icon="blender",
+            timeout=5
+        )
 classes = ()
 register, unregister = bpy.utils.register_classes_factory(classes)
 

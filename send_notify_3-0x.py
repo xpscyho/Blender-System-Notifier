@@ -10,6 +10,12 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+from datetime import datetime
+import bpy
+import os
+import locale
+import subprocess
+import sys
 bl_info = {
     "name": "Notify",
     "author": "xpscyho",
@@ -20,37 +26,40 @@ bl_info = {
     "warning": "",
     "wiki_url": "",
     "category": "System",
-    }
-import bpy, os, locale, subprocess, sys
-from bpy.app.handlers import persistent
+}
 py_exec = sys.executable
 try:
     from plyer import notification
 except:
-    subprocess.call([py_exec, "-m", "pip", "install", "plyer", "-t", os.path.join(sys.prefix, "lib", "site-packages")])
+    subprocess.call([py_exec, "-m", "pip", "install", "plyer",
+                    "-t", os.path.join(sys.prefix, "lib", "site-packages")])
     from plyer import notification
 
-loc = locale.getlocale() # get current locale
+loc = locale.getlocale()  # get current locale
 locx = loc[:3]
 locale.getdefaultlocale()
-@persistent
+
+
+@bpy.app.handlers.persistent
 def is_render_complete(scene):
+    # get render time
     localizedPrint = {
-        "es_": "Blender | Render Finalizado!", # Espanol
-        "ca_": "Blender | S´ha finalitzat la prestació!", # Catalan
-        "fr_": "Blender | Rendu terminé!", # Frances
-        "it_": "Blender | Rendering finito!", # Italiano
-        "pt_": "Blender | Renderizado concluído!", # Portugues
-        "de_": "Blender | Fertig machen!", # Deutsch
+        "es_": "Blender | Render Finalizado!",  # Espanol
+        "ca_": "Blender | S´ha finalitzat la prestació!",  # Catalan
+        "fr_": "Blender | Rendu terminé!",  # Frances
+        "it_": "Blender | Rendering finito!",  # Italiano
+        "pt_": "Blender | Renderizado concluído!",  # Portugues
+        "de_": "Blender | Fertig machen!",  # Deutsch
     }
     if not locx in localizedPrint:
-        localizedPrint = "Blender | Render Finished!"
+        localizedPrint = "Blender | Render Finished!" + \
+            "\n" + str(datetime.now() - TIMER)
     else:
-        localizedPrint = localizedPrint[locx]
-    bashCommand = f'notify-send -a "Blender" -u "critical" -i "blender" "{localizedPrint}"'
-    
+        localizedPrint = localizedPrint[locx] + \
+            "\n" + str(datetime.now() - TIMER)
     if sys.platform == "linux":
-        subprocess.call(['notify-send', '-a', 'Blender', '-u', 'critical', '-i', 'blender', localizedPrint])
+        subprocess.call(['notify-send', '-a', 'Blender', '-u',
+                        'normal', '-i', 'blender', localizedPrint])
     elif sys.platform == "win32":
         notification.notify(
             title="Blender",
@@ -58,13 +67,23 @@ def is_render_complete(scene):
             app_icon=None,
             timeout=10
         )
+
+
 classes = ()
 register, unregister = bpy.utils.register_classes_factory(classes)
+TIMER = None
+
+
+def start_timer(scene):
+    global TIMER
+    TIMER = datetime.now()
+
 
 def register():
-     bpy.app.handlers.render_complete.append(is_render_complete)
+    bpy.app.handlers.render_init.append(start_timer)
+    bpy.app.handlers.render_complete.append(is_render_complete)
 def unregister():
-     bpy.app.handlers.render_complete.remove(is_render_complete)
+    bpy.app.handlers.render_complete.remove(is_render_complete)
 
 if __name__ == '__main__':
     register()

@@ -24,20 +24,6 @@ bl_info = {
 import bpy, os, locale, subprocess, sys
 from bpy.app.handlers import persistent
 py_exec = sys.executable
-# check if pip is installed
-try:
-    if os.system == "Linux":
-        os.system("pip > /dev/null")
-    elif os.system == "Windows":
-        os.system("pip > NUL")
-except:
-    subprocess.call([str(py_exec), "-m", "ensurepip"])
-    subprocess.call([str(py_exec), "-m", "pip", "install", "--upgrade", "pip"])
-try:
-    from plyer import notification
-except:
-    subprocess.call([str(py_exec), "-m", "pip", "install", "plyer"])
-    from plyer import notification
 loc = locale.getlocale() # get current locale
 locx = loc[:3]
 locale.getdefaultlocale()
@@ -59,12 +45,7 @@ def is_render_complete(scene):
     if sys.platform == "linux":
         subprocess.call(['notify-send', '-a', 'Blender', '-u', 'critical', '-i', 'blender', localizedPrint])
     elif sys.platform == "win32":
-        notification.notify(
-            title="Blender",
-            message=localizedPrint,
-            app_icon="blender",
-            timeout=10
-        )
+        os.system("powershell -command \"& {$notification = New-Object -com Shell.Application;$notification.ShowBalloonTip(0, 'Blender', '" + localizedPrint + "', 'info');}\"")
 classes = ()
 register, unregister = bpy.utils.register_classes_factory(classes)
 

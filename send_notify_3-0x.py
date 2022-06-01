@@ -35,22 +35,25 @@ py_exec = sys.executable
 script_dir = os.path.dirname(os.path.realpath(__file__))
 print(sys.exec_prefix)
 # get site-packages path
-print(sys.version)
-#split sys.version by second period
-version = str(sys.version.split('.')[:2])
-print(version)
-#site_packages = pathlib.Path(py_exec / "Lib" / sys.version
+# version = ".".join(sys.version.split('.')[:2])
+# print(version)
+if sys.platform == "win32":
+    site_packages = str(pathlib.Path(sys.exec_prefix) /
+                        "Lib" / "site-packages")
+elif sys.platform == "linux":
+    site_packages = str(pathlib.Path(sys.exec_prefix) /
+                        "lib" / sys.version[:3] / "site-packages")
 print(site_packages)
-
+# import tensorflow
 try:
     from PIL import Image
 except:
-    # print("\nPIL not installed in bundled Python, installing...")
-    # subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
-    #                 "-t", os.path.join(sys.prefix, "lib", "site-packages")])
+    print("\nPIL not installed in bundled Python, installing...")
+    subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
+                    "-t", site_packages])
     from PIL import Image
 # https://download.blender.org/branding/blender_logo_kit.zip
-# 
+#
 if not os.path.exists(script_dir+"/blender_logo_kit"):
     print("Notifier | Downloading Blender logo kit...")
     logozip = requests.get(
@@ -72,7 +75,7 @@ try:
 except:
     print("\nplyer not installed in bundled Python, installing...")
     subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "plyer",
-                        "-t", os.path.join(sys.prefix, "lib", "site-packages")])
+                     "-t", site_packages])
     from plyer import notification
 
 locx = locale.getlocale()[:3]  # get current locale
@@ -85,15 +88,15 @@ locale.getdefaultlocale()
 def is_render_complete(scene):
     # get localization print:
     localizedPrint = {
-        "es_": "¡El renderizado está hecho!\n duración:",  # Espanol
-        "ca_": "el renderitzat està fet!\n durada:",  # Catalan
-        "fr_": "le rendu est fait!\n durée:",  # Frances
-        "it_": "il rendering è fatto!\n durata:",  # Italiano
-        "pt_": "renderização está feita!\n duração:",  # Portugues
+        "es_": "¡El renderizado está hecho!\n Duración:",  # Espanol
+        "ca_": "el renderitzat està fet!\n Durada:",  # Catalan
+        "fr_": "le rendu est fait!\n Durée:",  # Frances
+        "it_": "il rendering è fatto!\n Durata:",  # Italiano
+        "pt_": "renderização está feita!\n Duração:",  # Portugues
         "de_": "Das rendern ist fertig!\n Dauer:",  # Deutsch
     }
     if not locx in localizedPrint:
-        localizedPrint = "Render is done! \n duration:" + \
+        localizedPrint = "Render is done! \n Duration:" + \
             str(datetime.now() - TIMER)
     else:
         localizedPrint = localizedPrint[locx] + str(datetime.now() - TIMER)

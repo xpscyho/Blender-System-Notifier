@@ -32,23 +32,25 @@ bl_info = {
 # https://download.blender.org/branding/blender_logo_kit.zip
 script_dir = os.path.dirname(os.path.realpath(__file__))
 if not os.path.exists(os.path.join(script_dir, "blender_logo_kit")):
-    print("\nDownloading Blender Logo Kit")
     logozip = requests.get(
         "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
+    print("\nDownloaded Blender Logo Kit")
     open(os.path.join(script_dir, "Logo"), "wb").write(logozip.content)
-    print("\nExtracting Blender Logo Kit")
     with zipfile.ZipFile(script_dir+"Logo.zip", "r") as zip_ref:
         zip_ref.extractall(path=script_dir)
+    print("Extracted Blender Logo Kit")
     os.remove(os.path.join(script_dir, "Logo"))
-    print("\nDeleted temp zip and extracted logos")
+    print("Deleted temp zip and extracted logos")
 
 py_exec = sys.executable
-try:
-    from plyer import notification
-except:
-    subprocess.call([py_exec, "-m", "pip", "install", "plyer",
-                    "-t", os.path.join(sys.prefix, "lib", "site-packages")])
-    from plyer import notification
+if sys.platform == "win32":
+    try:
+        from plyer import notification
+    except:
+        print("\nplyer not installed, installing required package")
+        subprocess.call([py_exec, "-m", "pip", "install", "plyer",
+                        "-t", os.path.join(sys.prefix, "lib", "site-packages")])
+        from plyer import notification
 
 locx = locale.getlocale()[:3]  # get current locale
 locale.getdefaultlocale()

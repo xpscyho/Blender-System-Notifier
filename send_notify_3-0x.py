@@ -31,9 +31,11 @@ bl_info = {
     "wiki_url": "https://github.com/xpscyho/Notify_Blender_Render/",
     "category": "System",
 }
+
+# Mac version already has a notification system, so the addon doesn't need to register
+assert sys.platform != "darwin" "macOS blender already has notifications __built in__, why install this?"
 py_exec = sys.executable
 script_dir = os.path.dirname(os.path.realpath(__file__))
-print(sys.exec_prefix)
 # get site-packages path
 # version = ".".join(sys.version.split('.')[:2])
 # print(version)
@@ -43,8 +45,7 @@ if sys.platform == "win32":
 elif sys.platform == "linux":
     site_packages = str(pathlib.Path(sys.exec_prefix) /
                         "lib" / sys.version[:3] / "site-packages")
-print(site_packages)
-# import tensorflow
+# print(site_packages)
 try:
     from PIL import Image
 except:
@@ -54,20 +55,23 @@ except:
     from PIL import Image
 # https://download.blender.org/branding/blender_logo_kit.zip
 #
-if not os.path.exists(script_dir+"/blender_logo_kit"):
-    print("Notifier | Downloading Blender logo kit...")
-    logozip = requests.get(
-        "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
-    open(script_dir+"/.Logo", "wb").write(logozip.content)
-    with zipfile.ZipFile(script_dir + "/.Logo", "r") as zip_ref:
-        zip_ref.extractall(path=script_dir)
-    os.remove(script_dir+"/.Logo")
-    print("\nDownloaded Blender Logo Kit, converting to ico...")
-    icon = Image.open(
-        script_dir+"/blender_logo_kit/square/blender_icon_128x128.png")
-    icon.save(
-        script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico", sizes=[(128, 128)])
-    print("Notifier | Converted Blender Logo Kit to ico")
+if sys.platform == "win32":
+    print("Notifier | Using Windows. Notification icons need to be downloaded.")
+    if not os.path.exists(script_dir+"/blender_logo_kit"):
+        print("Notifier | Downloading Blender logo kit...")
+        logozip = requests.get(
+            "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
+        open(script_dir+"/.Logo", "wb").write(logozip.content)
+        with zipfile.ZipFile(script_dir + "/.Logo", "r") as zip_ref:
+            zip_ref.extractall(path=script_dir)
+        os.remove(script_dir+"/.Logo")
+        print(
+            "\nNotifier | Downloaded Blender Logo Kit, converting necessary png to ico...")
+        icon = Image.open(
+            script_dir+"/blender_logo_kit/square/blender_icon_128x128.png")
+        icon.save(
+            script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico", sizes=[(128, 128)])
+        print("Notifier | Converted Blender Logo Kit to ico")
 
 # if sys.platform == "win32":
 try:
@@ -88,29 +92,32 @@ locale.getdefaultlocale()
 def is_render_complete(scene):
     # get localization print:
     localizedPrint = {
-        "es_": "¡El renderizado está hecho!\n Duración:",  # Espanol
-        "ca_": "el renderitzat està fet!\n Durada:",  # Catalan
-        "fr_": "le rendu est fait!\n Durée:",  # Frances
-        "it_": "il rendering è fatto!\n Durata:",  # Italiano
-        "pt_": "renderização está feita!\n Duração:",  # Portugues
-        "de_": "Das rendern ist fertig!\n Dauer:",  # Deutsch
+        "es_": "¡El renderizado está hecho!\n | Duración: ",  # Espanol
+        "ca_": "el renderitzat està fet!\n | Durada: ",  # Catalan
+        "fr_": "le rendu est fait!\n | Durée: ",  # Frances
+        "it_": "il rendering è fatto!\n | Durata: ",  # Italiano
+        "pt_": "renderização está feita!\n | Duração: ",  # Portugues
+        "de_": "Das rendern ist fertig!\n | Dauer: ",  # Deutsch
     }
     if not locx in localizedPrint:
-        localizedPrint = "Render is done! \n Duration:" + \
+        localizedPrint = "Render is done! \n | Duration: " + \
             str(datetime.now() - TIMER)
     else:
         localizedPrint = localizedPrint[locx] + str(datetime.now() - TIMER)
     # if datetime.now - TIMER > datetime(0, 0, 0, 0, 0, 30):
-    if sys.platform == "linux":
-        subprocess.call(['notify-send', '-a', 'Blender', '-u',
-                        'normal', '-i', 'blender', localizedPrint])
-    elif sys.platform == "win32":
-        notification.notify(
-            title="Blender",
-            message=localizedPrint,
-            app_icon=script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico",
-            timeout=10
-        )
+    print(localizedPrint)
+    # Notification threshold
+    if (datetime.now().timestamp() - TIMER.timestamp()) > 30:
+        if sys.platform == "linux":
+            subprocess.call(['notify-send', '-a', 'Blender', '-u',
+                            'normal', '-i', 'blender', localizedPrint])
+        elif sys.platform == "win32":
+            notification.notify(
+                title="Blender",
+                message=localizedPrint,
+                app_icon=script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico",
+                timeout=10
+            )
 
 
 classes = ()
@@ -131,6 +138,8 @@ def register():
 def unregister():
     bpy.app.handlers.render_complete.remove(is_render_complete)
 
+
+print("Notify | Initialized")
 
 if __name__ == '__main__':
     register()

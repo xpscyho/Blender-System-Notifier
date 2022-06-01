@@ -20,6 +20,7 @@ from datetime import datetime
 import requests
 import zipfile
 import pathlib
+import importlib
 bl_info = {
     "name": "Notify",
     "author": "xpscyho",
@@ -48,17 +49,13 @@ elif sys.platform == "linux":
 # print(site_packages)
 if sys.platform == "win32":
     print("Notifier | Using Windows. Notification icons need to be downloaded, along with some other packages.")
-    try:
-        from PIL import Image
-    except:
-        print("\nPIL not installed in bundled Python, installing...")
+    if not importlib.util.find_spec("PIL"):
+        print("Notifier | PIL not installed in bundled Python, installing...")
         subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
                         "-t", site_packages])
     from PIL import Image
-    try:
-        from plyer import notification
-    except:
-        print("\nNotifier | plyer not installed in bundled Python, installing...")
+    if not importlib.util.find_spec("plyer"):
+        print("Notifier | plyer not installed in bundled Python, installing...")
         subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "plyer",
                         "-t", site_packages])
         from plyer import notification

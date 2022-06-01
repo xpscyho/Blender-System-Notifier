@@ -47,42 +47,40 @@ elif sys.platform == "linux":
                         "lib" / f"python{'.'.join(sys.version.split('.')[:2])}" / "site-packages")
 
 # print(site_packages)
-# if sys.platform == "win32":
-invalid_packages = []
-try:
-    from PIL import Image
-except:
-    invalid_packages.append("pillow")
-try:
-    from plyer import notification
-except:
-    invalid_packages.append("plyer")
-print(invalid_packages)
-if len(invalid_packages) > 0:
-    print("Notifier | The windows version of the addon will need to install some packages:")
-    for package in invalid_packages:
+if sys.platform == "win32":
+    invalid_packages = []
+    try:
+        from PIL import Image
+    except:
+        invalid_packages.append("pillow")
+    try:
+        from plyer import notification
+    except:
+        invalid_packages.append("plyer")
+    if len(invalid_packages) > 0:
+        print("Notifier | The windows version of the addon will need to install some packages:")
+        for package in invalid_packages:
+            print(
+                f"Notifier | {package} not installed in bundled python, installing...")
+            subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", package,
+                            "-t", site_packages], stderr=open(os.devnull, "w"), stdout=open(os.devnull, "w"))
+        from PIL import Image
+        from plyer import notification
+    if not os.path.exists(script_dir+"/blender_logo_kit"):
+        # https://download.blender.org/branding/blender_logo_kit.zip
+        print("Notifier | Missing icon. Downloading Blender logo kit...")
+        logozip = requests.get(
+            "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
+        open(script_dir+"/.Logo", "wb").write(logozip.content)
+        with zipfile.ZipFile(script_dir + "/.Logo", "r") as zip_ref:
+            zip_ref.extractall(path=script_dir)
+        os.remove(script_dir+"/.Logo")
         print(
-            f"Notifier | {package} not installed in bundled python, installing...")
-        subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", package,
-                        "-t", site_packages], stderr=open(os.devnull, "w"), stdout=open(os.devnull, "w"))
-    from PIL import Image
-    from plyer import notification
-if not os.path.exists(script_dir+"/blender_logo_kit"):
-    # https://download.blender.org/branding/blender_logo_kit.zip
-    print("Notifier | Missing icon. Downloading Blender logo kit...")
-    logozip = requests.get(
-        "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
-    open(script_dir+"/.Logo", "wb").write(logozip.content)
-    with zipfile.ZipFile(script_dir + "/.Logo", "r") as zip_ref:
-        zip_ref.extractall(path=script_dir)
-    os.remove(script_dir+"/.Logo")
-    print(
-        "\nNotifier | Converting necessary png to ico...")
-    icon = Image.open(
-        script_dir+"/blender_logo_kit/square/blender_icon_128x128.png")
-    icon.save(
-        script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico", sizes=[(128, 128)])
-    print("Notifier | Converted Blender Logo Kit to ico")
+            "\nNotifier | Converting necessary png to ico...")
+        icon = Image.open(
+            script_dir+"/blender_logo_kit/square/blender_icon_128x128.png")
+        icon.save(
+            script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico", sizes=[(128, 128)])
 
 locx = locale.getlocale()[:3]  # get current locale
 locale.getdefaultlocale()

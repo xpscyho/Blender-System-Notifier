@@ -6,7 +6,8 @@ works on linux and windows.
 <div id="header" align="center">
   <img src="images/Comp.png"/>
 </div>
-How to install:
+
+# How to install:
 
 1.  Clone or Download the github
 3.  Extract files anywhere
@@ -18,6 +19,6 @@ How to install:
 7.  Check the box next to "system: notify" on your add-ons tab
 8.  Save preferences, if you don't have auto-save on
 
-
+---
 Notifier supports notifications in 7 languages: English, Spanish, Catalan, Italian, French, German and Portuguese
 Notifier will auto detect the sytem language.

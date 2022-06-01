@@ -35,8 +35,8 @@ py_exec = sys.executable
 try:
     from PIL import Image
 except:
-    if os.path.exists(str(pathlib.Path(sys.prefix) / "lib" / "site-packages" / "pillow" )):
-        os.rmdir(os.path.join(sys.prefix, "lib", "site-packages"))
+    if os.path.exists(str(pathlib.Path(sys.prefix) / "lib" / "site-packages" / "PIL" )):
+        os.rmdir(os.path.join(sys.prefix, "lib", "site-packages", "PIL"))
     print("\nPIL not installed in bundled Python, installing...")
     subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
                     "-t", os.path.join(sys.prefix, "lib", "site-packages")])
@@ -62,9 +62,9 @@ if sys.platform == "win32":
         from plyer import notification
     except:
         if os.path.exists(str(pathlib.Path(sys.prefix) / "lib" / "site-packages" / "plyer" )):
-            os.rmdir(os.path.join(sys.prefix, "lib", "site-packages", "plyer"))
+            os.rmdir(str(pathlib.Path(sys.prefix) / "lib" / "site-packages" / "plyer" ))
         print("\nplyer not installed in bundled Python, installing...")
-        subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
+        subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "plyer",
                          "-t", os.path.join(sys.prefix, "lib", "site-packages")])
         from plyer import notification
 

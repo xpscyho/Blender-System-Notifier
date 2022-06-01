@@ -10,7 +10,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import bpy
+
 import os
 import locale
 import subprocess
@@ -18,6 +18,7 @@ import sys
 from datetime import datetime
 import requests
 import zipfile
+import pathlib
 bl_info = {
     "name": "Notify",
     "author": "xpscyho",
@@ -31,16 +32,15 @@ bl_info = {
 }
 # https://download.blender.org/branding/blender_logo_kit.zip
 script_dir = os.path.dirname(os.path.realpath(__file__))
-if not os.path.exists(os.path.join(script_dir, "blender_logo_kit")):
+print(str(script_dir) + "/blender_logo_kit")
+if not os.path.exists(script_dir+"/blender_logo_kit"):
     logozip = requests.get(
         "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
-    print("\nDownloaded Blender Logo Kit")
-    open(os.path.join(script_dir, "Logo"), "wb").write(logozip.content)
-    with zipfile.ZipFile(os.path.join(script_dir+"Logo"), "r") as zip_ref:
+    open(script_dir+"/.Logo", "wb").write(logozip.content)
+    with zipfile.ZipFile(script_dir + "/.Logo", "r") as zip_ref:
         zip_ref.extractall(path=script_dir)
-    print("Extracted Blender Logo Kit")
-    os.remove(os.path.join(script_dir, "Logo"))
-    print("Deleted temp zip and extracted logos")
+    os.remove(script_dir+"/.Logo")
+    print("\nDownloaded Blender Logo Kit")
 
 py_exec = sys.executable
 if sys.platform == "win32":
@@ -55,6 +55,7 @@ if sys.platform == "win32":
 locx = locale.getlocale()[:3]  # get current locale
 locale.getdefaultlocale()
 
+import bpy
 @bpy.app.handlers.persistent
 def is_render_complete(scene):
     # get localization print:

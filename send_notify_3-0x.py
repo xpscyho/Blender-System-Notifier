@@ -64,7 +64,7 @@ if not os.path.exists(script_dir+"/blender_logo_kit"):
     os.remove(script_dir+"/.Logo")
     print("\nDownloaded Blender Logo Kit, converting to ico...")
     icon = Image.open(
-        script_dir+"/blender_logo_kit/square/blender_icon_1024x1024.png")
+        script_dir+"/blender_logo_kit/square/blender_icon_128x128.png")
     icon.save(
         script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico", sizes=[(128, 128)])
     print("Notifier | Converted Blender Logo Kit to ico")

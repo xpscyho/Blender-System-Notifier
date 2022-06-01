@@ -46,17 +46,23 @@ elif sys.platform == "linux":
     site_packages = str(pathlib.Path(sys.exec_prefix) /
                         "lib" / sys.version[:3] / "site-packages")
 # print(site_packages)
-try:
-    from PIL import Image
-except:
-    print("\nPIL not installed in bundled Python, installing...")
-    subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
-                    "-t", site_packages])
-    from PIL import Image
-# https://download.blender.org/branding/blender_logo_kit.zip
-#
 if sys.platform == "win32":
-    print("Notifier | Using Windows. Notification icons need to be downloaded.")
+    print("Notifier | Using Windows. Notification icons need to be downloaded, along with some other packages.")
+    try:
+        from PIL import Image
+    except:
+        print("\nPIL not installed in bundled Python, installing...")
+        subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
+                        "-t", site_packages])
+    from PIL import Image
+    try:
+        from plyer import notification
+    except:
+        print("\nNotifier | plyer not installed in bundled Python, installing...")
+        subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "plyer",
+                        "-t", site_packages])
+        from plyer import notification
+# https://download.blender.org/branding/blender_logo_kit.zip
     if not os.path.exists(script_dir+"/blender_logo_kit"):
         print("Notifier | Downloading Blender logo kit...")
         logozip = requests.get(
@@ -72,15 +78,6 @@ if sys.platform == "win32":
         icon.save(
             script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico", sizes=[(128, 128)])
         print("Notifier | Converted Blender Logo Kit to ico")
-
-# if sys.platform == "win32":
-try:
-    from plyer import notification
-except:
-    print("\nplyer not installed in bundled Python, installing...")
-    subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "plyer",
-                     "-t", site_packages])
-    from plyer import notification
 
 locx = locale.getlocale()[:3]  # get current locale
 locale.getdefaultlocale()
@@ -130,6 +127,7 @@ def start_timer(scene):
     global TIMER
     TIMER = datetime.now()
 
+
 class NotifyPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
     notify_threshold: bpy.props.IntProperty(
@@ -143,6 +141,8 @@ class NotifyPreferences(bpy.types.AddonPreferences):
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "notify_threshold")
+
+
 def register():
     bpy.utils.register_class(NotifyPreferences)
     bpy.app.handlers.render_init.append(start_timer)
@@ -153,7 +153,7 @@ def unregister():
     bpy.app.handlers.render_complete.remove(is_render_complete)
 
 
-print("Notify | Initialized")
+print("Notifier | Initialized")
 
 if __name__ == '__main__':
     register()

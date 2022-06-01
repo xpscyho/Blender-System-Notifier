@@ -27,6 +27,7 @@ bl_info = {
     "wiki_url": "https://github.com/xpscyho/Notify_Blender_Render/",
     "category": "System",
 }
+#https://download.blender.org/branding/blender_logo_kit.zip
 py_exec = sys.executable
 try:
     from plyer import notification

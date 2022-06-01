@@ -90,14 +90,15 @@ locale.getdefaultlocale()
 
 @bpy.app.handlers.persistent
 def is_render_complete(scene):
-    # get localization print:
+    print("")
+    # localization dictionary
     localizedPrint = {
-        "es_": "¡El renderizado está hecho!\n | Duración: ",  # Espanol
-        "ca_": "el renderitzat està fet!\n | Durada: ",  # Catalan
-        "fr_": "le rendu est fait!\n | Durée: ",  # Frances
-        "it_": "il rendering è fatto!\n | Durata: ",  # Italiano
-        "pt_": "renderização está feita!\n | Duração: ",  # Portugues
-        "de_": "Das rendern ist fertig!\n | Dauer: ",  # Deutsch
+        "es_": "  ¡El renderizado está hecho!\n Duración: ",  # Espanol
+        "ca_": "  el renderitzat està fet!\n Durada: ",  # Catalan
+        "fr_": "  le rendu est fait!\n Durée: ",  # Frances
+        "it_": "  il rendering è fatto!\n Durata: ",  # Italiano
+        "pt_": "  renderização está feita!\n Duração: ",  # Portugues
+        "de_": "  Das rendern ist fertig!\n Dauer: ",  # Deutsch
     }
     if not locx in localizedPrint:
         localizedPrint = "Render is done! \n | Duration: " + \
@@ -107,7 +108,7 @@ def is_render_complete(scene):
     # if datetime.now - TIMER > datetime(0, 0, 0, 0, 0, 30):
     print(localizedPrint)
     # Notification threshold
-    if (datetime.now().timestamp() - TIMER.timestamp()) > 30:
+    if (datetime.now().timestamp() - TIMER.timestamp()) > bpy.context.preferences.addons[__name__].preferences.notify_threshold:
         if sys.platform == "linux":
             subprocess.call(['notify-send', '-a', 'Blender', '-u',
                             'normal', '-i', 'blender', localizedPrint])
@@ -129,8 +130,21 @@ def start_timer(scene):
     global TIMER
     TIMER = datetime.now()
 
+class NotifyPreferences(bpy.types.AddonPreferences):
+    bl_idname = __name__
+    notify_threshold: bpy.props.IntProperty(
+        name="Notification Threshold",
+        description="Time in seconds to wait before displaying a notification",
+        default=30,
+        min=1,
+        max=60
+    )
 
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "notify_threshold")
 def register():
+    bpy.utils.register_class(NotifyPreferences)
     bpy.app.handlers.render_init.append(start_timer)
     bpy.app.handlers.render_complete.append(is_render_complete)
 

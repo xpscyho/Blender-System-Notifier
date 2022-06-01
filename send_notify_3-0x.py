@@ -11,6 +11,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import bpy
 import os
 import locale
 import subprocess
@@ -30,32 +31,45 @@ bl_info = {
     "wiki_url": "https://github.com/xpscyho/Notify_Blender_Render/",
     "category": "System",
 }
+py_exec = sys.executable
+try:
+    from PIL import Image
+except:
+    print("\nPIL not installed in bundled Python, installing...")
+    subprocess.call([py_exec, "-m", "pip", "install", "pillow",
+                    "-t", os.path.join(sys.prefix, "lib", "site-packages")])
+    from PIL import Image
 # https://download.blender.org/branding/blender_logo_kit.zip
 script_dir = os.path.dirname(os.path.realpath(__file__))
-print(str(script_dir) + "/blender_logo_kit")
 if not os.path.exists(script_dir+"/blender_logo_kit"):
+    print("Notifier | Downloading Blender logo kit...")
     logozip = requests.get(
         "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
     open(script_dir+"/.Logo", "wb").write(logozip.content)
     with zipfile.ZipFile(script_dir + "/.Logo", "r") as zip_ref:
         zip_ref.extractall(path=script_dir)
     os.remove(script_dir+"/.Logo")
-    print("\nDownloaded Blender Logo Kit")
-
-py_exec = sys.executable
+    print("\nDownloaded Blender Logo Kit, converting to ico...")
+    icon = Image.open(
+        script_dir+"/blender_logo_kit/square/blender_icon_1024x1024.png")
+    icon.save(
+        script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico", sizes=[(128, 128)])
+    print("Notifier | Converted Blender Logo Kit to ico")
 if sys.platform == "win32":
     try:
         from plyer import notification
     except:
-        print("\nplyer not installed, installing required package")
-        subprocess.call([py_exec, "-m", "pip", "install", "plyer",
-                        "-t", os.path.join(sys.prefix, "lib", "site-packages")])
+        print("\nplyer not installed in bundled Python, installing...")
+        subprocess.call([py_exec, "-m", "pip", "install", "pillow",
+                         "-t", os.path.join(sys.prefix, "lib", "site-packages")])
         from plyer import notification
 
 locx = locale.getlocale()[:3]  # get current locale
 locale.getdefaultlocale()
 
-import bpy
+exit()
+
+
 @bpy.app.handlers.persistent
 def is_render_complete(scene):
     # get localization print:
@@ -80,7 +94,7 @@ def is_render_complete(scene):
         notification.notify(
             title="Blender",
             message=localizedPrint,
-            app_icon=script_dir+"/blender_logo_kit/square/blender_icon_128x128.png",
+            app_icon=script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico",
             timeout=10
         )
 

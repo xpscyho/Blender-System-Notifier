@@ -16,6 +16,8 @@ import locale
 import subprocess
 import sys
 from datetime import datetime
+import requests
+import zipfile
 bl_info = {
     "name": "Notify",
     "author": "xpscyho",
@@ -28,6 +30,14 @@ bl_info = {
     "category": "System",
 }
 #https://download.blender.org/branding/blender_logo_kit.zip
+script_dir = os.path.dirname(os.path.realpath(__file__))
+if not os.path.exists(os.path.join(script_dir, "Logo/")):
+    logozip = requests.get("https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
+    open(script_dir+"Logo.zip", "wb").write(logozip.content)
+    with zipfile.ZipFile(script_dir+"Logo.zip", "r") as zip_ref:
+        zip_ref.extractall(script_dir+"Logo/")
+    os.remove(script_dir+"Logo.zip")
+
 py_exec = sys.executable
 try:
     from plyer import notification
@@ -55,17 +65,17 @@ def is_render_complete(scene):
         localizedPrint = "Render is done! \n duration:" + str(datetime.now() - TIMER)
     else:
         localizedPrint = localizedPrint[locx] + str(datetime.now() - TIMER)
-    if datetime.now - TIMER > datetime(0, 0, 0, 0, 0, 30):
-        if sys.platform == "linux":
-            subprocess.call(['notify-send', '-a', 'Blender', '-u',
-                            'normal', '-i', 'blender', localizedPrint])
-        elif sys.platform == "win32":
-            notification.notify(
-                title="Blender",
-                message=localizedPrint,
-                app_icon=None,
-                timeout=10
-            )
+    #if datetime.now - TIMER > datetime(0, 0, 0, 0, 0, 30):
+    if sys.platform == "linux":
+        subprocess.call(['notify-send', '-a', 'Blender', '-u',
+                        'normal', '-i', 'blender', localizedPrint])
+    elif sys.platform == "win32":
+        notification.notify(
+            title="Blender",
+            message=localizedPrint,
+            app_icon=script_dir+"Logo/square/blender_icon_128x128.png",
+            timeout=10
+        )
 
 
 classes = ()

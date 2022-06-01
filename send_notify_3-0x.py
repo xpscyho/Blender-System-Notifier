@@ -147,9 +147,9 @@ class NotifyPreferences(bpy.types.AddonPreferences):
 
 
 def register():
-    bpy.utils.register_class(NotifyPreferences)
     bpy.app.handlers.render_init.append(start_timer)
     bpy.app.handlers.render_complete.append(is_render_complete)
+    bpy.utils.register_class(NotifyPreferences)
 
 
 def unregister():

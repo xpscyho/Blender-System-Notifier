@@ -36,7 +36,7 @@ if not os.path.exists(os.path.join(script_dir, "blender_logo_kit")):
         "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
     print("\nDownloaded Blender Logo Kit")
     open(os.path.join(script_dir, "Logo"), "wb").write(logozip.content)
-    with zipfile.ZipFile(script_dir+"Logo.zip", "r") as zip_ref:
+    with zipfile.ZipFile(os.path.join(script_dir+"Logo.zip"), "r") as zip_ref:
         zip_ref.extractall(path=script_dir)
     print("Extracted Blender Logo Kit")
     os.remove(os.path.join(script_dir, "Logo"))

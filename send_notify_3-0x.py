@@ -71,7 +71,7 @@ if sys.platform == "win32":
 locx = locale.getlocale()[:3]  # get current locale
 locale.getdefaultlocale()
 
-exit()
+# exit()
 
 
 @bpy.app.handlers.persistent

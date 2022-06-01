@@ -36,7 +36,7 @@ try:
     from PIL import Image
 except:
     print("\nPIL not installed in bundled Python, installing...")
-    subprocess.call([py_exec, "-m", "pip", "install", "pillow",
+    subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
                     "-t", os.path.join(sys.prefix, "lib", "site-packages")])
     from PIL import Image
 # https://download.blender.org/branding/blender_logo_kit.zip
@@ -60,7 +60,7 @@ if sys.platform == "win32":
         from plyer import notification
     except:
         print("\nplyer not installed in bundled Python, installing...")
-        subprocess.call([py_exec, "-m", "pip", "install", "pillow",
+        subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
                          "-t", os.path.join(sys.prefix, "lib", "site-packages")])
         from plyer import notification
 

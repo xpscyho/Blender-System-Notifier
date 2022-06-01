@@ -3,10 +3,10 @@ Notifier *should* support versions >2.80. It was built for 3.3.0
 Notify Sends a system notification when your render is complete, 
 works on linux and windows.
 <div id="header" align="center">
-  <img src="images/Screenshot_linux.png" width="300"/>
+  <img src="images/Screenshot_linux.png"/>
 </div>
 <div id="header" align="center">
-  <img src="images/Screenshot_windows.png" width="300"/>
+  <img src="images/Screenshot_windows.png"/>
 </div>
 ![](images/Screenshot_linux.png) ![](images/Screenshot_windows.png)
 

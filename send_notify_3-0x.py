@@ -38,43 +38,51 @@ assert sys.platform != "darwin" "macOS blender already has notifications __built
 py_exec = sys.executable
 script_dir = os.path.dirname(os.path.realpath(__file__))
 # get site-packages path
-# version = ".".join(sys.version.split('.')[:2])
 # print(version)
 if sys.platform == "win32":
     site_packages = str(pathlib.Path(sys.exec_prefix) /
                         "Lib" / "site-packages")
 elif sys.platform == "linux":
     site_packages = str(pathlib.Path(sys.exec_prefix) /
-                        "lib" / sys.version[:3] / "site-packages")
+                        "lib" / f"python{'.'.join(sys.version.split('.')[:2])}" / "site-packages")
+
 # print(site_packages)
-if sys.platform == "win32":
-    print("Notifier | Using Windows. Notification icons need to be downloaded, along with some other packages.")
-    if not importlib.util.find_spec("PIL"):
-        print("Notifier | PIL not installed in bundled Python, installing...")
-        subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
-                        "-t", site_packages])
+# if sys.platform == "win32":
+invalid_packages = []
+try:
     from PIL import Image
-    if not importlib.util.find_spec("plyer"):
-        print("Notifier | plyer not installed in bundled Python, installing...")
-        subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "plyer",
-                        "-t", site_packages])
-        from plyer import notification
-# https://download.blender.org/branding/blender_logo_kit.zip
-    if not os.path.exists(script_dir+"/blender_logo_kit"):
-        print("Notifier | Downloading Blender logo kit...")
-        logozip = requests.get(
-            "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
-        open(script_dir+"/.Logo", "wb").write(logozip.content)
-        with zipfile.ZipFile(script_dir + "/.Logo", "r") as zip_ref:
-            zip_ref.extractall(path=script_dir)
-        os.remove(script_dir+"/.Logo")
+except:
+    invalid_packages.append("pillow")
+try:
+    from plyer import notification
+except:
+    invalid_packages.append("plyer")
+print(invalid_packages)
+if len(invalid_packages) > 0:
+    print("Notifier | The windows version of the addon will need to install some packages:")
+    for package in invalid_packages:
         print(
-            "\nNotifier | Downloaded Blender Logo Kit, converting necessary png to ico...")
-        icon = Image.open(
-            script_dir+"/blender_logo_kit/square/blender_icon_128x128.png")
-        icon.save(
-            script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico", sizes=[(128, 128)])
-        print("Notifier | Converted Blender Logo Kit to ico")
+            f"Notifier | {package} not installed in bundled python, installing...")
+        subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", package,
+                        "-t", site_packages], stderr=open(os.devnull, "w"), stdout=open(os.devnull, "w"))
+from PIL import Image
+from plyer import notification
+if not os.path.exists(script_dir+"/blender_logo_kit"):
+    # https://download.blender.org/branding/blender_logo_kit.zip
+    print("Notifier | Missing icon. Downloading Blender logo kit...")
+    logozip = requests.get(
+        "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
+    open(script_dir+"/.Logo", "wb").write(logozip.content)
+    with zipfile.ZipFile(script_dir + "/.Logo", "r") as zip_ref:
+        zip_ref.extractall(path=script_dir)
+    os.remove(script_dir+"/.Logo")
+    print(
+        "\nNotifier | Converting necessary png to ico...")
+    icon = Image.open(
+        script_dir+"/blender_logo_kit/square/blender_icon_128x128.png")
+    icon.save(
+        script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico", sizes=[(128, 128)])
+    print("Notifier | Converted Blender Logo Kit to ico")
 
 locx = locale.getlocale()[:3]  # get current locale
 locale.getdefaultlocale()
@@ -87,15 +95,15 @@ def is_render_complete(scene):
     print("")
     # localization dictionary
     localizedPrint = {
-        "es_": "  ¡El renderizado está hecho!\n Duración: ",  # Espanol
-        "ca_": "  el renderitzat està fet!\n Durada: ",  # Catalan
-        "fr_": "  le rendu est fait!\n Durée: ",  # Frances
-        "it_": "  il rendering è fatto!\n Durata: ",  # Italiano
-        "pt_": "  renderização está feita!\n Duração: ",  # Portugues
-        "de_": "  Das rendern ist fertig!\n Dauer: ",  # Deutsch
+        "es_": "  ¡El renderizado está hecho!\nDuración: ",  # Espanol
+        "ca_": "  el renderitzat està fet!\nDurada: ",  # Catalan
+        "fr_": "  le rendu est fait!\nDurée: ",  # Frances
+        "it_": "  il rendering è fatto!\nDurata: ",  # Italiano
+        "pt_": "  renderização está feita!\nDuração: ",  # Portugues
+        "de_": "  Das rendern ist fertig!\nDauer: ",  # Deutsch
     }
     if not locx in localizedPrint:
-        localizedPrint = "  Render is done!\n Duration: " + \
+        localizedPrint = "  Render is done!\nDuration: " + \
             str(datetime.now() - TIMER)
     else:
         localizedPrint = localizedPrint[locx] + str(datetime.now() - TIMER)
@@ -110,7 +118,7 @@ def is_render_complete(scene):
             notification.notify(
                 title="Blender",
                 message=localizedPrint,
-                app_icon=script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico",
+                app_icon=script_dir+"/blender_logo_kit/square/blender_icon_128x128.png",
                 timeout=10
             )
 

@@ -65,8 +65,8 @@ if len(invalid_packages) > 0:
             f"Notifier | {package} not installed in bundled python, installing...")
         subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", package,
                         "-t", site_packages], stderr=open(os.devnull, "w"), stdout=open(os.devnull, "w"))
-from PIL import Image
-from plyer import notification
+    from PIL import Image
+    from plyer import notification
 if not os.path.exists(script_dir+"/blender_logo_kit"):
     # https://download.blender.org/branding/blender_logo_kit.zip
     print("Notifier | Missing icon. Downloading Blender logo kit...")

@@ -29,14 +29,18 @@ bl_info = {
     "wiki_url": "https://github.com/xpscyho/Notify_Blender_Render/",
     "category": "System",
 }
-#https://download.blender.org/branding/blender_logo_kit.zip
+# https://download.blender.org/branding/blender_logo_kit.zip
 script_dir = os.path.dirname(os.path.realpath(__file__))
-if not os.path.exists(os.path.join(script_dir, "Logo/")):
-    logozip = requests.get("https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
-    open(script_dir+"Logo.zip", "wb").write(logozip.content)
+if not os.path.exists(os.path.join(script_dir, "blender_logo_kit")):
+    print("\nDownloading Blender Logo Kit")
+    logozip = requests.get(
+        "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
+    open(os.path.join(script_dir, "Logo"), "wb").write(logozip.content)
+    print("\nExtracting Blender Logo Kit")
     with zipfile.ZipFile(script_dir+"Logo.zip", "r") as zip_ref:
-        zip_ref.extractall(os.path.join(script_dir, "Logo/"))
-    os.remove(os.path.join(script_dir, "Logo.zip"))
+        zip_ref.extractall(path=script_dir)
+    os.remove(os.path.join(script_dir, "Logo"))
+    print("\nDeleted temp zip and extracted logos")
 
 py_exec = sys.executable
 try:
@@ -48,7 +52,6 @@ except:
 
 locx = locale.getlocale()[:3]  # get current locale
 locale.getdefaultlocale()
-
 
 @bpy.app.handlers.persistent
 def is_render_complete(scene):
@@ -62,10 +65,11 @@ def is_render_complete(scene):
         "de_": "Das rendern ist fertig!\n Dauer:",  # Deutsch
     }
     if not locx in localizedPrint:
-        localizedPrint = "Render is done! \n duration:" + str(datetime.now() - TIMER)
+        localizedPrint = "Render is done! \n duration:" + \
+            str(datetime.now() - TIMER)
     else:
         localizedPrint = localizedPrint[locx] + str(datetime.now() - TIMER)
-    #if datetime.now - TIMER > datetime(0, 0, 0, 0, 0, 30):
+    # if datetime.now - TIMER > datetime(0, 0, 0, 0, 0, 30):
     if sys.platform == "linux":
         subprocess.call(['notify-send', '-a', 'Blender', '-u',
                         'normal', '-i', 'blender', localizedPrint])
@@ -73,7 +77,7 @@ def is_render_complete(scene):
         notification.notify(
             title="Blender",
             message=localizedPrint,
-            app_icon=script_dir+"Logo/square/blender_icon_128x128.png",
+            app_icon=script_dir+"blender_logo_kit/square/blender_icon_128x128.png",
             timeout=10
         )
 
@@ -91,8 +95,11 @@ def start_timer(scene):
 def register():
     bpy.app.handlers.render_init.append(start_timer)
     bpy.app.handlers.render_complete.append(is_render_complete)
+
+
 def unregister():
     bpy.app.handlers.render_complete.remove(is_render_complete)
+
 
 if __name__ == '__main__':
     register()

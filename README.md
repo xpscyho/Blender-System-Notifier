@@ -20,4 +20,4 @@ How to install:
 
 
 Notifier supports notifications in 7 languages: English, Spanish, Catalan, Italian, French, German and Portuguese
-Notify will auto detect the sytem language.
+Notifier will auto detect the sytem language.

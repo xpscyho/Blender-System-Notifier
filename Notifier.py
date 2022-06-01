@@ -22,12 +22,12 @@ import zipfile
 import pathlib
 import importlib
 bl_info = {
-    "name": "Notify",
+    "name": "Notifier",
     "author": "xpscyho",
     "version": (1, 1),
     "blender": (3, 0, 0),
     "location": "Global",
-    "description": "Displays a system notification when render is complete",
+    "description": "Displays a system notification when render a render completes",
     "warning": "",
     "wiki_url": "https://github.com/xpscyho/Notify_Blender_Render/",
     "category": "System",

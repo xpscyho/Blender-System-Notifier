@@ -1,15 +1,11 @@
 # BlenderSystemNotifier
 Notifier *should* support versions >2.80. It was built for 3.3.0
+
 Notify Sends a system notification when your render is complete, 
 works on linux and windows.
 <div id="header" align="center">
-  <img src="images/Screenshot_linux.png"/>
+  <img src="images/Comp.png"/>
 </div>
-<div id="header" align="center">
-  <img src="images/Screenshot_windows.png"/>
-</div>
-![](images/Screenshot_linux.png) ![](images/Screenshot_windows.png)
-
 How to install:
 
 1.  Clone or Download the github

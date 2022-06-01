@@ -32,15 +32,25 @@ bl_info = {
     "category": "System",
 }
 py_exec = sys.executable
+script_dir = os.path.dirname(os.path.realpath(__file__))
+print(sys.exec_prefix)
+# get site-packages path
+print(sys.version)
+#split sys.version by second period
+version = str(sys.version.split('.')[:2])
+print(version)
+#site_packages = pathlib.Path(py_exec / "Lib" / sys.version
+print(site_packages)
+
 try:
     from PIL import Image
 except:
-    print("\nPIL not installed in bundled Python, installing...")
-    subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
-                    "-t", os.path.join(sys.prefix, "lib", "site-packages")])
+    # print("\nPIL not installed in bundled Python, installing...")
+    # subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
+    #                 "-t", os.path.join(sys.prefix, "lib", "site-packages")])
     from PIL import Image
 # https://download.blender.org/branding/blender_logo_kit.zip
-script_dir = os.path.dirname(os.path.realpath(__file__))
+# 
 if not os.path.exists(script_dir+"/blender_logo_kit"):
     print("Notifier | Downloading Blender logo kit...")
     logozip = requests.get(
@@ -55,14 +65,15 @@ if not os.path.exists(script_dir+"/blender_logo_kit"):
     icon.save(
         script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico", sizes=[(128, 128)])
     print("Notifier | Converted Blender Logo Kit to ico")
-if sys.platform == "win32":
-    try:
-        from plyer import notification
-    except:
-        print("\nplyer not installed in bundled Python, installing...")
-        subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "plyer",
-                         "-t", os.path.join(sys.prefix, "lib", "site-packages")])
-        from plyer import notification
+
+# if sys.platform == "win32":
+try:
+    from plyer import notification
+except:
+    print("\nplyer not installed in bundled Python, installing...")
+    subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "plyer",
+                        "-t", os.path.join(sys.prefix, "lib", "site-packages")])
+    from plyer import notification
 
 locx = locale.getlocale()[:3]  # get current locale
 locale.getdefaultlocale()

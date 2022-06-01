@@ -93,15 +93,15 @@ def is_render_complete(scene):
     print("")
     # localization dictionary
     localizedPrint = {
-        "es_": "  ¡El renderizado está hecho!\nDuración: ",  # Espanol
-        "ca_": "  el renderitzat està fet!\nDurada: ",  # Catalan
-        "fr_": "  le rendu est fait!\nDurée: ",  # Frances
-        "it_": "  il rendering è fatto!\nDurata: ",  # Italiano
-        "pt_": "  renderização está feita!\nDuração: ",  # Portugues
-        "de_": "  Das rendern ist fertig!\nDauer: ",  # Deutsch
+        "es_": "¡El renderizado está hecho!\nDuración: ",  # Espanol
+        "ca_": "el renderitzat està fet!\nDurada: ",  # Catalan
+        "fr_": "le rendu est fait!\nDurée: ",  # Frances
+        "it_": "il rendering è fatto!\nDurata: ",  # Italiano
+        "pt_": "renderização está feita!\nDuração: ",  # Portugues
+        "de_": "Das rendern ist fertig!\nDauer: ",  # Deutsch
     }
     if not locx in localizedPrint:
-        localizedPrint = "  Render is done!\nDuration: " + \
+        localizedPrint = "Render is done!\nDuration: " + \
             str(datetime.now() - TIMER)
     else:
         localizedPrint = localizedPrint[locx] + str(datetime.now() - TIMER)
@@ -126,11 +126,6 @@ register, unregister = bpy.utils.register_classes_factory(classes)
 TIMER = None
 
 
-def start_timer(scene):
-    global TIMER
-    TIMER = datetime.now()
-
-
 class NotifyPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
     notify_threshold: bpy.props.IntProperty(
@@ -146,6 +141,11 @@ class NotifyPreferences(bpy.types.AddonPreferences):
         layout.prop(self, "notify_threshold")
 
 
+def start_timer(scene):
+    global TIMER
+    TIMER = datetime.now()
+
+
 def register():
     bpy.app.handlers.render_init.append(start_timer)
     bpy.app.handlers.render_complete.append(is_render_complete)
@@ -153,7 +153,9 @@ def register():
 
 
 def unregister():
+    bpy.app.handlers.render_init.remove(start_timer)
     bpy.app.handlers.render_complete.remove(is_render_complete)
+    bpy.utils.unregister_class(NotifyPreferences)
 
 
 print("Notifier | Initialized")

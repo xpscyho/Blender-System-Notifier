@@ -118,7 +118,7 @@ def is_render_complete(scene):
             notification.notify(
                 title="Blender",
                 message=localizedPrint,
-                app_icon=script_dir+"/blender_logo_kit/square/blender_icon_128x128.png",
+                app_icon=script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico",
                 timeout=10
             )
 

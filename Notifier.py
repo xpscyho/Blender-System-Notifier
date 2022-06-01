@@ -158,7 +158,5 @@ def unregister():
     bpy.utils.unregister_class(NotifyPreferences)
 
 
-print("Notifier | Initialized")
-
 if __name__ == '__main__':
     register()

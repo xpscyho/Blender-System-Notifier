@@ -35,8 +35,8 @@ if not os.path.exists(os.path.join(script_dir, "Logo/")):
     logozip = requests.get("https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
     open(script_dir+"Logo.zip", "wb").write(logozip.content)
     with zipfile.ZipFile(script_dir+"Logo.zip", "r") as zip_ref:
-        zip_ref.extractall(script_dir+"Logo/")
-    os.remove(script_dir+"Logo.zip")
+        zip_ref.extractall(os.path.join(script_dir, "Logo/"))
+    os.remove(os.path.join(script_dir, "Logo.zip"))
 
 py_exec = sys.executable
 try:

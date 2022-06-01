@@ -36,7 +36,7 @@ try:
     from PIL import Image
 except:
     if os.path.exists(str(pathlib.Path(sys.prefix) / "lib" / "site-packages")):
-        os.remove(os.path.join(sys.prefix, "lib", "site-packages"))
+        os.rmdir(os.path.join(sys.prefix, "lib", "site-packages"))
     print("\nPIL not installed in bundled Python, installing...")
     subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
                     "-t", os.path.join(sys.prefix, "lib", "site-packages")])
@@ -62,7 +62,7 @@ if sys.platform == "win32":
         from plyer import notification
     except:
         if os.path.exists(str(pathlib.Path(sys.prefix) / "lib" / "site-packages" )):
-            os.remove(os.path.join(sys.prefix, "lib", "site-packages", "plyer"))
+            os.rmdir(os.path.join(sys.prefix, "lib", "site-packages", "plyer"))
         print("\nplyer not installed in bundled Python, installing...")
         subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", "pillow",
                          "-t", os.path.join(sys.prefix, "lib", "site-packages")])

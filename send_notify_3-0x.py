@@ -101,7 +101,7 @@ def is_render_complete(scene):
         "de_": "  Das rendern ist fertig!\n Dauer: ",  # Deutsch
     }
     if not locx in localizedPrint:
-        localizedPrint = "Render is done! \n | Duration: " + \
+        localizedPrint = "  Render is done!\n Duration: " + \
             str(datetime.now() - TIMER)
     else:
         localizedPrint = localizedPrint[locx] + str(datetime.now() - TIMER)

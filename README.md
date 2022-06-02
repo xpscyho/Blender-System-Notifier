@@ -5,9 +5,8 @@ Notify Sends a system notification when your render is complete,
 works on linux and windows.
 
 <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=black"/> <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=black"/> <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=black"/>
-<div id="header" align="center">
-  <img src="images/Comp.png"/>
-</div>
+<img src="images/Comp.png"/>
+
 
 # How to install:
 

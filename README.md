@@ -21,5 +21,5 @@ works on linux and windows.
 8.  Save preferences, if you don't have auto-save on
 
 ---
-Notifier supports 9 languages: English, Spanish, Catalan, Italian, French, German, Portuguese, Russian, and Japanese.
+Notifier supports a few languages: English, Spanish, Catalan, Italian, French, German, Portuguese, Russian, and Japanese.
 Notifier will auto detect the sytem language.

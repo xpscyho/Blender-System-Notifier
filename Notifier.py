@@ -21,6 +21,7 @@ import requests
 import zipfile
 import pathlib
 import importlib
+
 bl_info = {
     "name": "Notifier",
     "author": "xpscyho",
@@ -34,17 +35,21 @@ bl_info = {
 }
 
 # Mac version already has a notification system, so the addon doesn't need to register
-assert sys.platform != "darwin" "macOS blender already has notifications __built in__, why install this?"
+assert (
+    sys.platform != "darwin"
+    "macOS blender already has notifications b̲u̲i̲l̲t̲ ̲i̲n̲, why install this?"
+)
 py_exec = sys.executable
 script_dir = os.path.dirname(os.path.realpath(__file__))
 # get site-packages path
 # print(version)
 if sys.platform == "win32":
-    site_packages = str(pathlib.Path(sys.exec_prefix) /
-                        "Lib" / "site-packages")
+    site_packages = str(
+        pathlib.Path(sys.exec_prefix) / "Lib" / "site-packages")
 elif sys.platform == "linux":
-    site_packages = str(pathlib.Path(sys.exec_prefix) /
-                        "lib" / f"python{'.'.join(sys.version.split('.')[:2])}" / "site-packages")
+    site_packages = str(
+        pathlib.Path(sys.exec_prefix) / "lib" /
+        f"python{'.'.join(sys.version.split('.')[:2])}" / "site-packages")
 
 # print(site_packages)
 if sys.platform == "win32":
@@ -58,29 +63,37 @@ if sys.platform == "win32":
     except:
         invalid_packages.append("plyer")
     if len(invalid_packages) > 0:
-        print("Notifier | The windows version of the addon will need to install some packages:")
+        print(
+            "Notifier | The windows version of the addon will need to install some packages:"
+        )
         for package in invalid_packages:
             print(
-                f"Notifier | {package} not installed in bundled python, installing...")
-            subprocess.call([py_exec, "-m", "pip", "install", "--upgrade", "--no-cache-dir", package,
-                            "-t", site_packages], stderr=open(os.devnull, "w"), stdout=open(os.devnull, "w"))
+                f"Notifier | {package} not installed in bundled python, installing..."
+            )
+            subprocess.call(
+                [py_exec, "-m", "pip", "install", "--upgrade",
+                    "--no-cache-dir", package, "-t", site_packages],
+                stderr=open(os.devnull, "w"),
+                stdout=open(os.devnull, "w"),
+            )
         from PIL import Image
         from plyer import notification
-    if not os.path.exists(script_dir+"/blender_logo_kit"):
+    if not os.path.exists(script_dir + "/blender_logo_kit"):
         # https://download.blender.org/branding/blender_logo_kit.zip
         print("Notifier | Missing icon. Downloading Blender logo kit...")
         logozip = requests.get(
-            "https://download.blender.org/branding/blender_logo_kit.zip", allow_redirects=True)
-        open(script_dir+"/.Logo", "wb").write(logozip.content)
+            "https://download.blender.org/branding/blender_logo_kit.zip",
+            allow_redirects=True,
+        )
+        open(script_dir + "/.Logo", "wb").write(logozip.content)
         with zipfile.ZipFile(script_dir + "/.Logo", "r") as zip_ref:
             zip_ref.extractall(path=script_dir)
-        os.remove(script_dir+"/.Logo")
-        print(
-            "\nNotifier | Converting necessary png to ico...")
+        os.remove(script_dir + "/.Logo")
+        print("\nNotifier | Converting necessary png to ico...")
         icon = Image.open(
-            script_dir+"/blender_logo_kit/square/blender_icon_128x128.png")
-        icon.save(
-            script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico", sizes=[(128, 128)])
+            script_dir + "/blender_logo_kit/square/blender_icon_32x32.png")
+        icon.save(script_dir + "/blender_logo_kit/square/blender_icon_32x32.ico",
+                  sizes=[(32, 32)])
 
 locx = locale.getlocale()[:3]  # get current locale
 locale.getdefaultlocale()
@@ -99,6 +112,8 @@ def is_render_complete(scene):
         "it_": "il rendering è fatto!\nDurata: ",  # Italiano
         "pt_": "renderização está feita!\nDuração: ",  # Portugues
         "de_": "Das rendern ist fertig!\nDauer: ",  # Deutsch
+        "ru_": "Рендер завершен!\nДлитeльнocть: ",  # Russian
+        "ja_": "レンダリングが完了しました!\n時間: ",  # Japanese
     }
     if not locx in localizedPrint:
         localizedPrint = "Render is done!\nDuration: " + \
@@ -110,35 +125,32 @@ def is_render_complete(scene):
     # Notification threshold
     if (datetime.now().timestamp() - TIMER.timestamp()) > bpy.context.preferences.addons[__name__].preferences.notify_threshold:
         if sys.platform == "linux":
-            subprocess.call(['notify-send', '-a', 'Blender', '-u',
-                            'normal', '-i', 'blender', localizedPrint])
+            subprocess.call(["notify-send",
+                             "-a", "Blender",
+                             "-u", "normal",
+                             "-i", "blender",
+                             localizedPrint])
         elif sys.platform == "win32":
-            notification.notify(
-                title="Blender",
-                message=localizedPrint,
-                app_icon=script_dir+"/blender_logo_kit/square/blender_icon_128x128.ico",
-                timeout=10
-            )
+            notification.notify(title="Blender", message=localizedPrint, timeout=10,
+                                app_icon=script_dir + "/blender_logo_kit/square/blender_icon_32x32.ico")
 
 
 classes = ()
 register, unregister = bpy.utils.register_classes_factory(classes)
-TIMER = None
 
 
 class NotifyPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
     notify_threshold: bpy.props.IntProperty(
-        name="Notification Threshold",
+        name="Minimum render time (seconds)",
         description="Time in seconds to wait before displaying a notification",
-        default=30,
-        min=1,
-        max=60
-    )
+        default=30, min=1, max=60)
 
     def draw(self, context):
-        layout = self.layout
-        layout.prop(self, "notify_threshold")
+        self.layout.prop(self, "notify_threshold")
+
+
+TIMER = None
 
 
 def start_timer(scene):
@@ -158,5 +170,5 @@ def unregister():
     bpy.utils.unregister_class(NotifyPreferences)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     register()

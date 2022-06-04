@@ -125,12 +125,14 @@ def is_render_complete(scene):
     # Notification threshold
     if (datetime.now().timestamp() - TIMER.timestamp()) > bpy.context.preferences.addons[__name__].preferences.notify_threshold:
         if sys.platform == "linux":
+            print("Notifier | Sending Linux notification...")
             subprocess.call(["notify-send",
                              "-a", "Blender",
                              "-u", "normal",
                              "-i", "blender",
                              localizedPrint])
         elif sys.platform == "win32":
+            print("Notifier | Sending Windows notification...")
             notification.notify(title="Blender", message=localizedPrint, timeout=10,
                                 app_icon=script_dir + "/blender_logo_kit/square/blender_icon_32x32.ico")
 
@@ -143,7 +145,7 @@ class NotifyPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
     notify_threshold: bpy.props.IntProperty(
         name="Minimum render time (seconds)",
-        description="Time in seconds to wait before displaying a notification",
+        description="Minumum render time to trigger notification",
         default=30, min=1, max=60)
 
     def draw(self, context):

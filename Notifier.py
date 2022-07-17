@@ -35,10 +35,7 @@ bl_info = {
 }
 
 # Mac version already has a notification system, so the addon doesn't need to register
-assert (
-    sys.platform != "darwin"
-    "macOS blender already has notifications b̲u̲i̲l̲t̲ ̲i̲n̲, why install this?"
-)
+assert sys.platform != "darwin" "macOS blender already has notifications b̲u̲i̲l̲t̲ ̲i̲n̲, why install this?"
 py_exec = sys.executable
 script_dir = os.path.dirname(os.path.realpath(__file__))
 # get site-packages path
@@ -103,7 +100,6 @@ locale.getdefaultlocale()
 
 @bpy.app.handlers.persistent
 def is_render_complete(scene):
-    print("")
     # localization dictionary
     localizedPrint = {
         "es_": "¡El renderizado está hecho!\nDuración: ",  # Espanol
@@ -120,19 +116,18 @@ def is_render_complete(scene):
             str(datetime.now() - TIMER)
     else:
         localizedPrint = localizedPrint[locx] + str(datetime.now() - TIMER)
-    # if datetime.now - TIMER > datetime(0, 0, 0, 0, 0, 30):
     print(localizedPrint)
     # Notification threshold
     if (datetime.now().timestamp() - TIMER.timestamp()) > bpy.context.preferences.addons[__name__].preferences.notify_threshold:
         if sys.platform == "linux":
-            print("Notifier | Sending Linux notification...")
+            print("Notifier | Sending notification...")
             subprocess.call(["notify-send",
                              "-a", "Blender",
                              "-u", "normal",
                              "-i", "blender",
                              localizedPrint])
         elif sys.platform == "win32":
-            print("Notifier | Sending Windows notification...")
+            print("Notifier | Sending notification...")
             notification.notify(title="Blender", message=localizedPrint, timeout=10,
                                 app_icon=script_dir + "/blender_logo_kit/square/blender_icon_32x32.ico")
 
@@ -155,7 +150,7 @@ class NotifyPreferences(bpy.types.AddonPreferences):
 TIMER = None
 
 
-def start_timer(scene):
+def start_timer():
     global TIMER
     TIMER = datetime.now()
 
